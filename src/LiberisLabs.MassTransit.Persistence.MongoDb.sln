@@ -9,6 +9,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiberisLabs.MassTransit.Per
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiberisLabs.MassTransit.Persistence.MongoDb.Tests", "LiberisLabs.MassTransit.Persistence.MongoDb.Tests\LiberisLabs.MassTransit.Persistence.MongoDb.Tests.csproj", "{914FBA1E-18E1-451E-8529-BA5ADB23EE00}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build stuff", "Build stuff", "{FB6A2254-A0CF-4901-A9F6-0C6EC5D217A6}"
+	ProjectSection(SolutionItems) = preProject
+		..\build-before_build.ps1 = ..\build-before_build.ps1
+		..\environment-install.ps1 = ..\environment-install.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project stuff", "Project stuff", "{543EBA65-EE08-4CDE-B44C-1CDC9B2E1C75}"
+	ProjectSection(SolutionItems) = preProject
+		..\appveyor.yml = ..\appveyor.yml
+		..\liberis-labs.jpg = ..\liberis-labs.jpg
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
