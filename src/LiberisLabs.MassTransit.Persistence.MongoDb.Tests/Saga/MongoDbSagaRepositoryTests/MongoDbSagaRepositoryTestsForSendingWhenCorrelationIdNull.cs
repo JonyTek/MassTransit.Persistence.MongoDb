@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using System;
+using MassTransit;
 using MassTransit.Persistence.MongoDb.Saga;
 using MassTransit.Pipeline;
 using MassTransit.Saga;
@@ -16,7 +17,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaRepo
         public void GivenAMongoDbSagaRepository_WhenSendingWithNullCorrelationId()
         {
             var context = new Mock<ConsumeContext<InitiateSimpleSaga>>();
-            context.Setup(x => x.Message.CorrelationId).Returns(null);
+            context.Setup(x => x.CorrelationId).Returns(default(Guid?));
 
             var repository = new MongoDbSagaRepository<SimpleSaga>();
 
