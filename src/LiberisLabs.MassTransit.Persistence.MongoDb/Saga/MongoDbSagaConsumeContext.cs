@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using MassTransit.Context;
 using MassTransit.Saga;
+using MongoDB.Driver;
 
 namespace MassTransit.Persistence.MongoDb.Saga
 {
@@ -10,8 +11,14 @@ namespace MassTransit.Persistence.MongoDb.Saga
         where TMessage : class
         where TSaga : class, ISaga
     {
-        public MongoDbSagaConsumeContext(ConsumeContext<TMessage> context) : base(context)
+        private IMongoCollection<TSaga> _collection;
+        private bool _existing;
+
+        public MongoDbSagaConsumeContext(IMongoCollection<TSaga> collection, ConsumeContext<TMessage> context, TSaga instance, bool existing = true) : base(context)
         {
+            Saga = instance;
+            _collection = collection;
+            _existing = existing;
         }
 
         public SagaConsumeContext<TSaga, T> PopContext<T>() where T : class

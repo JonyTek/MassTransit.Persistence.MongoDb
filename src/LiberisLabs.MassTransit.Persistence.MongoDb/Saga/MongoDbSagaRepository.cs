@@ -41,7 +41,12 @@ namespace MassTransit.Persistence.MongoDb.Saga
                 await _collection.InsertOneAsync(instance, new InsertOneOptions(), context.CancellationToken).ConfigureAwait(false);
             }
 
-            var sagaConsumeContext = new MongoDbSagaConsumeContext<TSaga,T>(context);
+            if (instance == null)
+            {
+                instance = await _collection.Find(x => x.CorrelationId == context.CorrelationId).SingleAsync(context.CancellationToken).ConfigureAwait(false);
+            }
+
+            var sagaConsumeContext = new MongoDbSagaConsumeContext<TSaga,T>(_collection, context, instance);
 
             await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
         }
