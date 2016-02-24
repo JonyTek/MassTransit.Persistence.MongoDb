@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using MassTransit;
 using MassTransit.Persistence.MongoDb.Saga;
 using MassTransit.Pipeline;
 using MassTransit.Saga;
+using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 
@@ -14,16 +16,16 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaRepo
         private SagaException _exception;
 
         [OneTimeSetUp]
-        public void GivenAMongoDbSagaRepository_WhenSendingWithNullCorrelationId()
+        public async Task GivenAMongoDbSagaRepository_WhenSendingWithNullCorrelationId()
         {
             var context = new Mock<ConsumeContext<InitiateSimpleSaga>>();
             context.Setup(x => x.CorrelationId).Returns(default(Guid?));
 
-            var repository = new MongoDbSagaRepository<SimpleSaga>();
+            var repository = new MongoDbSagaRepository<SimpleSaga>(Mock.Of<IMongoDatabase>());
 
             try
             {
-                repository.Send(context.Object, Mock.Of<ISagaPolicy<SimpleSaga, InitiateSimpleSaga>>(), Mock.Of<IPipe<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>>());
+                await repository.Send(context.Object, Mock.Of<ISagaPolicy<SimpleSaga, InitiateSimpleSaga>>(), Mock.Of<IPipe<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>>());
             }
             catch (SagaException exception)
             {

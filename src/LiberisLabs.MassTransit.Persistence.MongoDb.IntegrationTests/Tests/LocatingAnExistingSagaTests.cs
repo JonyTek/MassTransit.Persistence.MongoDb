@@ -8,6 +8,7 @@ using MassTransit;
 using MassTransit.Persistence.MongoDb.Saga;
 using MassTransit.Saga;
 using MassTransit.Transports.InMemory;
+using MongoDB.Driver;
 using NUnit.Framework;
 
 namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Tests
@@ -30,7 +31,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Tests
                 configurator.ReceiveEndpoint("input_queue",
                     endpointConfigurator =>
                     {
-                        endpointConfigurator.Saga(new MongoDbSagaRepository<SimpleSaga>());
+                        endpointConfigurator.Saga(new MongoDbSagaRepository<SimpleSaga>(new MongoUrl("mongodb://localhost/sagaTest")));
                     });
             });
 
