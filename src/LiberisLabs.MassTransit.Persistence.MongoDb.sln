@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiberisLabs.MassTransit.Per
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests", "LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests\LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.csproj", "{BBB417D5-4E58-4548-B3B9-D8589FC8BE6E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiberisLabs.MassTransit.Persistence.MongoDb.Tests", "LiberisLabs.MassTransit.Persistence.MongoDb.Tests\LiberisLabs.MassTransit.Persistence.MongoDb.Tests.csproj", "{914FBA1E-18E1-451E-8529-BA5ADB23EE00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{BBB417D5-4E58-4548-B3B9-D8589FC8BE6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBB417D5-4E58-4548-B3B9-D8589FC8BE6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBB417D5-4E58-4548-B3B9-D8589FC8BE6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{914FBA1E-18E1-451E-8529-BA5ADB23EE00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{914FBA1E-18E1-451E-8529-BA5ADB23EE00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{914FBA1E-18E1-451E-8529-BA5ADB23EE00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{914FBA1E-18E1-451E-8529-BA5ADB23EE00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
