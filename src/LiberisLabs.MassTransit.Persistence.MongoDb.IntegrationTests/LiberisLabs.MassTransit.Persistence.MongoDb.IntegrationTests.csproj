@@ -74,6 +74,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompleteSimpleSaga.cs" />
+    <Compile Include="Data\Bus.cs" />
+    <Compile Include="Data\SagaRepository.cs" />
+    <Compile Include="ExtensionMethodsForSagas.cs" />
     <Compile Include="InitiateSimpleSaga.cs" />
     <Compile Include="Tests\LocatingAnExistingSagaTests.cs" />
     <Compile Include="ObservableSagaMessage.cs" />

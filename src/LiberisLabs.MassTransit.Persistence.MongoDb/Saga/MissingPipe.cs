@@ -11,7 +11,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
             where TMessage : class
     {
         private readonly IMongoCollection<TSaga> _collection;
-        readonly IPipe<SagaConsumeContext<TSaga, TMessage>> _next;
+        private readonly IPipe<SagaConsumeContext<TSaga, TMessage>> _next;
 
         public MissingPipe(IMongoCollection<TSaga> collection, IPipe<SagaConsumeContext<TSaga, TMessage>> next)
         {

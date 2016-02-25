@@ -43,7 +43,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
 
             if (instance == null)
             {
-                instance = await _collection.Find(x => x.CorrelationId == context.CorrelationId).SingleAsync(context.CancellationToken).ConfigureAwait(false);
+                instance = await _collection.Find(x => x.CorrelationId == context.CorrelationId).SingleOrDefaultAsync(context.CancellationToken).ConfigureAwait(false);
             }
 
             if (instance == null)

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MassTransit.Context;
 using MassTransit.Saga;
 using MongoDB.Driver;
@@ -20,6 +21,8 @@ namespace MassTransit.Persistence.MongoDb.Saga
             _collection = collection;
             _existing = existing;
         }
+
+        Guid? MessageContext.CorrelationId => Saga.CorrelationId;
 
         public SagaConsumeContext<TSaga, T> PopContext<T>() where T : class
         {

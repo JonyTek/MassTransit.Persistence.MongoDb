@@ -3,18 +3,17 @@ using MassTransit;
 
 namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests
 {
-    public class InitiateSimpleSaga : CorrelatedBy<Guid>
+    [Serializable]
+    public class InitiateSimpleSaga : SimpleSagaMessageBase
     {
         public InitiateSimpleSaga()
         {
         }
 
         public InitiateSimpleSaga(Guid correlationId)
+            : base(correlationId)
         {
-            CorrelationId = correlationId;
         }
-
-        public Guid CorrelationId { get; }
 
         public string Name { get; set; }
     }

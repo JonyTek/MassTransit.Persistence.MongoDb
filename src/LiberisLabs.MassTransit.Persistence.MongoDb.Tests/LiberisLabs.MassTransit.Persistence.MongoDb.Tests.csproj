@@ -76,6 +76,7 @@
     <Compile Include="Data\SagaRepository.cs" />
     <Compile Include="InitiateSimpleSaga.cs" />
     <Compile Include="ObservableSagaMessage.cs" />
+    <Compile Include="Saga\MongoDbQuerySagaRepositoryTests.cs" />
     <Compile Include="Saga\MongoDbSagaRepositoryTests\MongoDbSagaRepositoryTestsForSendingWhenCorrelationIdNull.cs" />
     <Compile Include="Saga\MongoDbSagaRepositoryTests\MongoDbSagaRepositoryTestsForSendingWhenInstanceNotFound.cs" />
     <Compile Include="Saga\MongoDbSagaRepositoryTests\MongoDbSagaRepositoryTestsForSendingWhenInstanceNotReturnedFromPolicy.cs" />

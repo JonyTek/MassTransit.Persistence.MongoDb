@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MassTransit;
 using MassTransit.Saga;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests
 {
@@ -26,6 +27,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests
             Name = context.Message.Name;
         }
 
+        [BsonId]
         public Guid CorrelationId { get; set; }
 
         public async Task Consume(ConsumeContext<ObservableSagaMessage> message)
