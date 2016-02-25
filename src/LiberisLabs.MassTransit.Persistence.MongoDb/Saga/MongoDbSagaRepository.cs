@@ -46,9 +46,18 @@ namespace MassTransit.Persistence.MongoDb.Saga
                 instance = await _collection.Find(x => x.CorrelationId == context.CorrelationId).SingleAsync(context.CancellationToken).ConfigureAwait(false);
             }
 
-            var sagaConsumeContext = new MongoDbSagaConsumeContext<TSaga,T>(_collection, context, instance);
+            if (instance == null)
+            {
+                var missingSagaPipe = new MissingPipe<TSaga, T>(_collection, next);
 
-            await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
+                await policy.Missing(context, missingSagaPipe).ConfigureAwait(false);
+            }
+            else
+            {
+                var sagaConsumeContext = new MongoDbSagaConsumeContext<TSaga, T>(_collection, context, instance);
+
+                await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
+            }
         }
 
         public Task SendQuery<T>(SagaQueryConsumeContext<TSaga, T> context, ISagaPolicy<TSaga, T> policy, IPipe<SagaConsumeContext<TSaga, T>> next) where T : class
