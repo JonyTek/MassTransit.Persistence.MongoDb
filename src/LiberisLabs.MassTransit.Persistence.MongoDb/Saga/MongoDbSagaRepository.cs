@@ -58,6 +58,8 @@ namespace MassTransit.Persistence.MongoDb.Saga
 
                 await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
             }
+
+            await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == context.CorrelationId, instance, null, context.CancellationToken).ConfigureAwait(false);
         }
 
         public Task SendQuery<T>(SagaQueryConsumeContext<TSaga, T> context, ISagaPolicy<TSaga, T> policy, IPipe<SagaConsumeContext<TSaga, T>> next) where T : class

@@ -45,7 +45,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests
             return saga;
         }
 
-        public static async Task<Guid?> ShouldContainSaga<TSaga>(this ISagaRepository<TSaga> repository,
+        public static async Task<Guid?> ShouldContainSaga<TSaga>(this IQuerySagaRepository<TSaga> repository,
             Expression<Func<TSaga, bool>> filter,
             TimeSpan timeout)
             where TSaga : class, ISaga
@@ -56,7 +56,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests
 
             while (DateTime.Now < giveUpAt)
             {
-                List<Guid> sagas = (await (repository as IQuerySagaRepository<TSaga>).Where(query.FilterExpression).ConfigureAwait(false)).ToList();
+                var sagas = (await repository.Where(query.FilterExpression).ConfigureAwait(false)).ToList();
                 if (sagas.Count > 0)
                     return sagas.Single();
 

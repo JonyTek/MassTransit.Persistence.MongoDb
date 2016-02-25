@@ -10,35 +10,29 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Tests
     [TestFixture]
     public class LocatingAnExistingSagaTests
     {
-        private Guid _correlationId;
-        private InitiateSimpleSaga _message;
-        private Guid? _foundId;
-
-        [OneTimeSetUp]
-        public async Task GivenASimpleSaga_WhenQueryingSagaRepositoryForSaga()
+        [Test]
+        public async Task GivenACorrelatedMessage_TheCorrectSagaShouldBeFound()
         {
-            _correlationId = Guid.NewGuid();
-            _message = new InitiateSimpleSaga(_correlationId);
+            var correlationId = Guid.NewGuid();
+            var message = new InitiateSimpleSaga(correlationId);
 
             var busControl = await Bus.StartAsync();
 
-            await busControl.Publish(_message);
+            await busControl.Publish(message);
 
             var sagaRepository = new MongoDbQuerySagaRepository<SimpleSaga>(SagaRepository.Instance);
 
-            _foundId = await sagaRepository.ShouldContainSaga(_correlationId, TimeSpan.FromSeconds(30));
-        }
+            var foundId = await sagaRepository.ShouldContainSaga(correlationId, TimeSpan.FromSeconds(30));
 
-        [Test]
-        public void ThenSagaIsFound()
-        {
-            Assert.That(_foundId, Is.EqualTo(_message.CorrelationId));
-        }
+            Assert.That(foundId.HasValue, Is.True);
 
-        [Test]
-        public async Task Kill()
-        {
-            await SagaRepository.DeleteSaga(_correlationId);
+            var nextMessage = new CompleteSimpleSaga(correlationId);
+
+            await busControl.Publish(nextMessage);
+
+            foundId = await sagaRepository.ShouldContainSaga(x => x.CorrelationId == correlationId && x.Completed, TimeSpan.FromSeconds(300));
+
+            Assert.That(foundId.HasValue, Is.True);
         }
     }
 }
