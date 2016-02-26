@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using MassTransit.Pipeline;
 using MassTransit.Saga;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace MassTransit.Persistence.MongoDb.Saga
@@ -26,7 +27,13 @@ namespace MassTransit.Persistence.MongoDb.Saga
 
         public void Probe(ProbeContext context)
         {
-            throw new System.NotImplementedException();
+            var scope = context.CreateScope("sagaRepository");
+
+            //scope.Set(new
+            //{
+            //    Persistence = "mongodb",
+            //    Entities = _collection.
+            //});
         }
 
         public async Task Send<T>(ConsumeContext<T> context, ISagaPolicy<TSaga, T> policy, IPipe<SagaConsumeContext<TSaga, T>> next) where T : class
@@ -38,7 +45,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
 
             if (policy.PreInsertInstance(context, out instance))
             {
-                await _collection.InsertOneAsync(instance, new InsertOneOptions(), context.CancellationToken).ConfigureAwait(false);
+                await _collection.InsertOneAsync(instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
             }
 
             if (instance == null)
@@ -59,7 +66,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
                 await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
             }
 
-            await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == context.CorrelationId, instance, null, context.CancellationToken).ConfigureAwait(false);
+            await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == context.CorrelationId, instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
         }
 
         public Task SendQuery<T>(SagaQueryConsumeContext<TSaga, T> context, ISagaPolicy<TSaga, T> policy, IPipe<SagaConsumeContext<TSaga, T>> next) where T : class
