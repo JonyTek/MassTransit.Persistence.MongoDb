@@ -77,12 +77,15 @@
     <Compile Include="InitiateSimpleSaga.cs" />
     <Compile Include="ObservableSagaMessage.cs" />
     <Compile Include="Saga\MongoDbQuerySagaRepositoryTests.cs" />
+    <Compile Include="Saga\MongoDbSagaRepositoryTests\MongoDbSagaConsumeContextTestsForCorrelationId.cs" />
     <Compile Include="Saga\MongoDbSagaRepositoryTests\MongoDbSagaRepositoryTestsForProbing.cs" />
     <Compile Include="Saga\MongoDbSagaRepositoryTests\MongoDbSagaRepositoryTestsForSendingWhenCorrelationIdNull.cs" />
     <Compile Include="Saga\MongoDbSagaRepositoryTests\MongoDbSagaRepositoryTestsForSendingWhenInstanceNotFound.cs" />
     <Compile Include="Saga\MongoDbSagaRepositoryTests\MongoDbSagaRepositoryTestsForSendingWhenInstanceNotReturnedFromPolicy.cs" />
     <Compile Include="Saga\MongoDbSagaRepositoryTests\MongoDbSagaRepositoryTestsForSendingWhenPolicyReturnsInstance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Saga\MongoDbSagaRepositoryTests\MongoDbSagaRepositoryTestsForSendQueryWhenSagaNotFound.cs" />
+    <Compile Include="Saga\MongoDbSagaRepositoryTests\MongoDbSagaRepositoryTestsForSendQuery.cs" />
     <Compile Include="SimpleSaga.cs" />
     <Compile Include="SimpleSagaMessageBase.cs" />
   </ItemGroup>

@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using MassTransit.Pipeline;
 using MassTransit.Saga;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace MassTransit.Persistence.MongoDb.Saga
@@ -29,11 +30,12 @@ namespace MassTransit.Persistence.MongoDb.Saga
         {
             var scope = context.CreateScope("sagaRepository");
 
-            //scope.Set(new
-            //{
-            //    Persistence = "mongodb",
-            //    Entities = _collection.
-            //});
+            scope.Set(new
+            {
+                Persistence = "mongodb",
+                //Mongo is schemaless so assume that the class contains all entities 
+                Entities = typeof(TSaga).GetProperties().Select(x => x.Name)
+            });
         }
 
         public async Task Send<T>(ConsumeContext<T> context, ISagaPolicy<TSaga, T> policy, IPipe<SagaConsumeContext<TSaga, T>> next) where T : class
@@ -64,19 +66,54 @@ namespace MassTransit.Persistence.MongoDb.Saga
                 var sagaConsumeContext = new MongoDbSagaConsumeContext<TSaga, T>(_collection, context, instance);
 
                 await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
+
+                await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == context.CorrelationId, instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
             }
-
-            await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == context.CorrelationId, instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
         }
 
-        public Task SendQuery<T>(SagaQueryConsumeContext<TSaga, T> context, ISagaPolicy<TSaga, T> policy, IPipe<SagaConsumeContext<TSaga, T>> next) where T : class
+        public async Task SendQuery<T>(SagaQueryConsumeContext<TSaga, T> context, ISagaPolicy<TSaga, T> policy, IPipe<SagaConsumeContext<TSaga, T>> next) where T : class
         {
-            throw new System.NotImplementedException();
-        }
+            try
+            {
+                var sagaInstances = await _collection.Find(context.Query.FilterExpression).ToListAsync().ConfigureAwait(false);
 
-        public Task Find(ISagaQuery<TSaga> query)
-        {
-            throw new System.NotImplementedException();
+                if (!sagaInstances.Any())
+                {
+                    var missingPipe = new MissingPipe<TSaga, T>(_collection, next);
+
+                    await policy.Missing(context, missingPipe).ConfigureAwait(false);
+                }
+                else
+                {
+                    foreach (var instance in sagaInstances)
+                    {
+                        try
+                        {
+                            var sagaConsumeContext = new MongoDbSagaConsumeContext<TSaga, T>(_collection, context, instance);
+
+                            await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
+                        }
+                        catch (SagaException)
+                        {
+                            throw;
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new SagaException(ex.Message, typeof(TSaga), typeof(T), instance.CorrelationId, ex);
+                        }
+
+                        await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == instance.CorrelationId, instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (SagaException)
+            {
+                //Log
+            }
+            catch (Exception ex)
+            {
+                throw new SagaException(ex.Message, typeof(TSaga), typeof(T), Guid.Empty, ex);
+            }
         }
     }
 }
