@@ -1,11 +1,10 @@
-﻿using System;
-using MassTransit;
+﻿using MassTransit;
 using MassTransit.Persistence.MongoDb.Saga;
 using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 
-namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga
+namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaConsumeContextTests
 {
     [TestFixture]
     public class MongoDbSagaConsumeContextTestsForPopContext
