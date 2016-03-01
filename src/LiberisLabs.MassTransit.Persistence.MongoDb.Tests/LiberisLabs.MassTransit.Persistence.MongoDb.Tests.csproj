@@ -76,6 +76,7 @@
     <Compile Include="Data\SagaRepository.cs" />
     <Compile Include="InitiateSimpleSaga.cs" />
     <Compile Include="ObservableSagaMessage.cs" />
+    <Compile Include="Saga\MissingPipeTests\MissingPipeTestsForProbing.cs" />
     <Compile Include="Saga\MongoDbQuerySagaRepositoryTests.cs" />
     <Compile Include="Saga\MongoDbSagaConsumeContextTests\MongoDbSagaConsumeContextTestsForSetCompleted.cs" />
     <Compile Include="Saga\MongoDbSagaConsumeContextTests\MongoDbSagaConsumeContextTestsForPopContext.cs" />

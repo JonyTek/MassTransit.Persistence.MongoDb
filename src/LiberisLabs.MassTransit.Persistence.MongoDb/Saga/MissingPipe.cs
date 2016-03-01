@@ -19,7 +19,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
             _next = next;
         }
 
-        void IProbeSite.Probe(ProbeContext context)
+        public void Probe(ProbeContext context)
         {
             _next.Probe(context);
         }
