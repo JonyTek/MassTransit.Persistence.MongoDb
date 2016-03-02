@@ -76,6 +76,7 @@
     <Compile Include="Data\SagaRepository.cs" />
     <Compile Include="InitiateSimpleSaga.cs" />
     <Compile Include="ObservableSagaMessage.cs" />
+    <Compile Include="Saga\MissingPipeTests\MissingPipeTestsForSendingWhenProxyIncomplete.cs" />
     <Compile Include="Saga\MissingPipeTests\MissingPipeTestsForSendingWhenProxyCompleted.cs" />
     <Compile Include="Saga\MissingPipeTests\MissingPipeTestsForProbing.cs" />
     <Compile Include="Saga\MongoDbQuerySagaRepositoryTests.cs" />
