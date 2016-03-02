@@ -12,11 +12,13 @@ namespace MassTransit.Persistence.MongoDb.Saga
     {
         private readonly IMongoCollection<TSaga> _collection;
         private readonly IPipe<SagaConsumeContext<TSaga, TMessage>> _next;
+        private readonly IMongoDbSagaConsumeContextFactory _mongoDbSagaConsumeContextFactory;
 
-        public MissingPipe(IMongoCollection<TSaga> collection, IPipe<SagaConsumeContext<TSaga, TMessage>> next)
+        public MissingPipe(IMongoCollection<TSaga> collection, IPipe<SagaConsumeContext<TSaga, TMessage>> next, IMongoDbSagaConsumeContextFactory mongoDbSagaConsumeContextFactory)
         {
             _collection = collection;
             _next = next;
+            _mongoDbSagaConsumeContextFactory = mongoDbSagaConsumeContextFactory;
         }
 
         public void Probe(ProbeContext context)
@@ -26,7 +28,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
 
         public async Task Send(SagaConsumeContext<TSaga, TMessage> context)
         {
-            SagaConsumeContext<TSaga, TMessage> proxy = new MongoDbSagaConsumeContext<TSaga, TMessage>(_collection, context, context.Saga);
+            SagaConsumeContext<TSaga, TMessage> proxy = _mongoDbSagaConsumeContextFactory.Create(_collection, context, context.Saga);
 
             await _next.Send(proxy).ConfigureAwait(false);
 

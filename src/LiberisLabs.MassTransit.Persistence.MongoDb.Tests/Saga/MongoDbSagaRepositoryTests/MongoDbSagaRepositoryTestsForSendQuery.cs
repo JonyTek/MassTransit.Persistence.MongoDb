@@ -5,6 +5,7 @@ using MassTransit;
 using MassTransit.Persistence.MongoDb.Saga;
 using MassTransit.Pipeline;
 using MassTransit.Saga;
+using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 
@@ -17,6 +18,8 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaRepo
         private Mock<ISagaPolicy<SimpleSaga, InitiateSimpleSaga>> _sagaPolicy;
         private Mock<SagaQueryConsumeContext<SimpleSaga, InitiateSimpleSaga>> _sagaQueryConsumeContext;
         private Mock<IPipe<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>> _nextPipe;
+        private Mock<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>> _sagaConsumeContext;
+        private Mock<IMongoDbSagaConsumeContextFactory> _sagaConsumeContextFactory;
 
         [OneTimeSetUp]
         public async Task GivenAMongoDbSagaRepository_WhenSendingQuery()
@@ -31,7 +34,13 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaRepo
             _sagaPolicy = new Mock<ISagaPolicy<SimpleSaga, InitiateSimpleSaga>>();
             _nextPipe = new Mock<IPipe<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>>();
 
-            var repository = new MongoDbSagaRepository<SimpleSaga>(SagaRepository.Instance);
+            _sagaConsumeContext = new Mock<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>();
+            _sagaConsumeContext.Setup(x => x.CorrelationId).Returns(_correlationId);
+
+            _sagaConsumeContextFactory = new Mock<IMongoDbSagaConsumeContextFactory>();
+            _sagaConsumeContextFactory.Setup(m => m.Create(It.IsAny<IMongoCollection<SimpleSaga>>(), _sagaQueryConsumeContext.Object, It.Is<SimpleSaga>(x => x.CorrelationId == _correlationId), true)).Returns(_sagaConsumeContext.Object);
+
+            var repository = new MongoDbSagaRepository<SimpleSaga>(SagaRepository.Instance, _sagaConsumeContextFactory.Object);
 
             await repository.SendQuery(_sagaQueryConsumeContext.Object, _sagaPolicy.Object, _nextPipe.Object);
         }
@@ -39,7 +48,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaRepo
         [Test]
         public void ThenSagaSentToInstance()
         {
-            _sagaPolicy.Verify(x => x.Existing(It.IsAny<MongoDbSagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>(), _nextPipe.Object));
+            _sagaPolicy.Verify(x => x.Existing(_sagaConsumeContext.Object, _nextPipe.Object));
         }
 
         [Test]

@@ -9,10 +9,11 @@ namespace MassTransit.Persistence.MongoDb.Saga
 {
     public class MongoDbSagaRepository<TSaga> : ISagaRepository<TSaga> where TSaga : class, ISaga
     {
+        private readonly IMongoDbSagaConsumeContextFactory _mongoDbSagaConsumeContextFactory;
         private readonly IMongoCollection<TSaga> _collection;
 
         public MongoDbSagaRepository(string connectionString, string database)
-            : this(new MongoClient(connectionString).GetDatabase(database))
+            : this(new MongoClient(connectionString).GetDatabase(database), new MongoDbSagaConsumeContextFactory())
         {
         }
 
@@ -21,8 +22,9 @@ namespace MassTransit.Persistence.MongoDb.Saga
         {
         }
 
-        public MongoDbSagaRepository(IMongoDatabase mongoDatabase)
+        public MongoDbSagaRepository(IMongoDatabase mongoDatabase, IMongoDbSagaConsumeContextFactory mongoDbSagaConsumeContextFactory)
         {
+            _mongoDbSagaConsumeContextFactory = mongoDbSagaConsumeContextFactory;
             _collection = mongoDatabase.GetCollection<TSaga>("sagas");
         }
 
@@ -57,13 +59,13 @@ namespace MassTransit.Persistence.MongoDb.Saga
 
             if (instance == null)
             {
-                var missingSagaPipe = new MissingPipe<TSaga, T>(_collection, next);
+                var missingSagaPipe = new MissingPipe<TSaga, T>(_collection, next, _mongoDbSagaConsumeContextFactory);
 
                 await policy.Missing(context, missingSagaPipe).ConfigureAwait(false);
             }
             else
             {
-                var sagaConsumeContext = new MongoDbSagaConsumeContext<TSaga, T>(_collection, context, instance);
+                var sagaConsumeContext = _mongoDbSagaConsumeContextFactory.Create(_collection, context, instance);
 
                 await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
 
@@ -79,7 +81,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
 
                 if (!sagaInstances.Any())
                 {
-                    var missingPipe = new MissingPipe<TSaga, T>(_collection, next);
+                    var missingPipe = new MissingPipe<TSaga, T>(_collection, next, _mongoDbSagaConsumeContextFactory);
 
                     await policy.Missing(context, missingPipe).ConfigureAwait(false);
                 }
@@ -89,7 +91,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
                     {
                         try
                         {
-                            var sagaConsumeContext = new MongoDbSagaConsumeContext<TSaga, T>(_collection, context, instance);
+                            var sagaConsumeContext = _mongoDbSagaConsumeContextFactory.Create(_collection, context, instance);
 
                             await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
                         }

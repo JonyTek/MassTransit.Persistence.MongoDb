@@ -21,7 +21,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MissingPipeTest
 
             _nextPipe = new Mock<IPipe<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>>();
 
-            _pipe = new MissingPipe<SimpleSaga, InitiateSimpleSaga>(Mock.Of<IMongoCollection<SimpleSaga>>(), _nextPipe.Object);
+            _pipe = new MissingPipe<SimpleSaga, InitiateSimpleSaga>(Mock.Of<IMongoCollection<SimpleSaga>>(), _nextPipe.Object, Mock.Of<IMongoDbSagaConsumeContextFactory>());
         }
 
         [SetUp]
@@ -31,7 +31,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MissingPipeTest
         }
 
         [Test]
-        public void ThenNextPipeCalled()
+        public void ThenNextPipeProbed()
         {
             _nextPipe.Verify(m => m.Probe(_probeContext.Object), Times.Once);
         }

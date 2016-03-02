@@ -21,18 +21,22 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests
 
         public string Name { get; private set; }
         
-        public async Task Consume(ConsumeContext<InitiateSimpleSaga> context)
+        public Task Consume(ConsumeContext<InitiateSimpleSaga> context)
         {
             Initiated = true;
             Name = context.Message.Name;
+
+            return Task.FromResult(0);
         }
 
         [BsonId]
         public Guid CorrelationId { get; set; }
 
-        public async Task Consume(ConsumeContext<ObservableSagaMessage> message)
+        public Task Consume(ConsumeContext<ObservableSagaMessage> message)
         {
             Observed = true;
+
+            return Task.FromResult(0);
         }
 
         public Expression<Func<SimpleSaga, ObservableSagaMessage, bool>> CorrelationExpression
@@ -40,9 +44,11 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests
             get { return (saga, message) => saga.Name == message.Name; }
         }
 
-        public async Task Consume(ConsumeContext<CompleteSimpleSaga> message)
+        public Task Consume(ConsumeContext<CompleteSimpleSaga> message)
         {
             Completed = true;
+
+            return Task.FromResult(0);
         }
     }
 }

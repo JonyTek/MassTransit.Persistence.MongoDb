@@ -20,7 +20,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaRepo
             _probeContext = new Mock<ProbeContext>();
             _probeContext.Setup(m => m.CreateScope("sagaRepository")).Returns(_scope.Object);
 
-            var repository = new MongoDbSagaRepository<SimpleSaga>(SagaRepository.Instance);
+            var repository = new MongoDbSagaRepository<SimpleSaga>(SagaRepository.Instance, null);
 
             repository.Probe(_probeContext.Object);
         }

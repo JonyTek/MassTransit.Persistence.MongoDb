@@ -21,6 +21,8 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaRepo
         private Guid _correlationId;
         private CancellationToken _cancellationToken;
         private Mock<IPipe<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>> _nextPipe;
+        private Mock<IMongoDbSagaConsumeContextFactory> _sagaConsumeContextFactory;
+        private Mock<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>> _sagaConsumeContext;
 
         [OneTimeSetUp]
         public async Task GivenAMongoDbSagaRepository_WhenSendingAndPolicyReturnsInstance()
@@ -39,7 +41,14 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaRepo
 
             _nextPipe = new Mock<IPipe<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>>();
 
-            var repository = new MongoDbSagaRepository<SimpleSaga>(SagaRepository.Instance);
+            _sagaConsumeContext = new Mock<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>();
+            _sagaConsumeContext.Setup(x => x.CorrelationId).Returns(_correlationId);
+
+            _sagaConsumeContextFactory = new Mock<IMongoDbSagaConsumeContextFactory>();
+            _sagaConsumeContextFactory.Setup(m => m.Create(It.IsAny<IMongoCollection<SimpleSaga>>(), _context.Object, _simpleSaga, true)).Returns(_sagaConsumeContext.Object);
+
+
+            var repository = new MongoDbSagaRepository<SimpleSaga>(SagaRepository.Instance, _sagaConsumeContextFactory.Object);
 
             await repository.Send(_context.Object, _policy.Object, _nextPipe.Object);
         }
@@ -59,7 +68,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaRepo
         [Test]
         public void ThenPolicyUpdatedWithSagaInstance()
         {
-            _policy.Verify(m => m.Existing(It.Is<MongoDbSagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>(x => x.Saga.CorrelationId == _correlationId), _nextPipe.Object));
+            _policy.Verify(m => m.Existing(_sagaConsumeContext.Object, _nextPipe.Object));
         }
 
         [OneTimeTearDown]

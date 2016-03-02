@@ -21,7 +21,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaRepo
             var context = new Mock<ConsumeContext<InitiateSimpleSaga>>();
             context.Setup(x => x.CorrelationId).Returns(default(Guid?));
 
-            var repository = new MongoDbSagaRepository<SimpleSaga>(Mock.Of<IMongoDatabase>());
+            var repository = new MongoDbSagaRepository<SimpleSaga>(Mock.Of<IMongoDatabase>(), null);
 
             try
             {

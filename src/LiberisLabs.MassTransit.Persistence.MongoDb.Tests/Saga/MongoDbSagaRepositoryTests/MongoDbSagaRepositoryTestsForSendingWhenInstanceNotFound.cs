@@ -34,7 +34,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaRepo
 
             _nextPipe = new Mock<IPipe<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>>();
 
-            var repository = new MongoDbSagaRepository<SimpleSaga>(SagaRepository.Instance);
+            var repository = new MongoDbSagaRepository<SimpleSaga>(SagaRepository.Instance, null);
 
             await repository.Send(_context.Object, _policy.Object, _nextPipe.Object);
         }
