@@ -72,6 +72,7 @@
     <Compile Include="Saga\MongoDbSagaConsumeContext.cs" />
     <Compile Include="Saga\MongoDbSagaConsumeContextFactory.cs" />
     <Compile Include="Saga\MongoDbSagaRepository.cs" />
+    <Compile Include="Saga\IVersionedSaga.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
