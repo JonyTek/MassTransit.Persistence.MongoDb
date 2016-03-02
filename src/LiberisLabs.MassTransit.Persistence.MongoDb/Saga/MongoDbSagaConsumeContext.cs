@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MassTransit.Context;
-using MassTransit.Saga;
 using MassTransit.Util;
 using MongoDB.Driver;
 
@@ -11,7 +10,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
         ConsumeContextProxyScope<TMessage>,
         SagaConsumeContext<TSaga, TMessage>
         where TMessage : class
-        where TSaga : class, ISaga
+        where TSaga : class, IVersionedSaga
     {
         private readonly IMongoCollection<TSaga> _collection;
         private readonly bool _existing;

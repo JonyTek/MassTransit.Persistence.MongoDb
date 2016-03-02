@@ -1,13 +1,12 @@
 ﻿using System.Threading.Tasks;
 using MassTransit.Pipeline;
-using MassTransit.Saga;
 using MongoDB.Driver;
 
 namespace MassTransit.Persistence.MongoDb.Saga
 {
     public class MissingPipe<TSaga, TMessage> :
             IPipe<SagaConsumeContext<TSaga, TMessage>>
-            where TSaga : class, ISaga
+            where TSaga : class, IVersionedSaga
             where TMessage : class
     {
         private readonly IMongoCollection<TSaga> _collection;

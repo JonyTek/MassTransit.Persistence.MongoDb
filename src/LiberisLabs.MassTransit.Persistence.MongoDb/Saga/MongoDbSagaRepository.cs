@@ -7,7 +7,8 @@ using MongoDB.Driver;
 
 namespace MassTransit.Persistence.MongoDb.Saga
 {
-    public class MongoDbSagaRepository<TSaga> : ISagaRepository<TSaga> where TSaga : class, ISaga
+    public class MongoDbSagaRepository<TSaga> : ISagaRepository<TSaga> 
+        where TSaga : class, IVersionedSaga
     {
         private readonly IMongoDbSagaConsumeContextFactory _mongoDbSagaConsumeContextFactory;
         private readonly IMongoCollection<TSaga> _collection;
