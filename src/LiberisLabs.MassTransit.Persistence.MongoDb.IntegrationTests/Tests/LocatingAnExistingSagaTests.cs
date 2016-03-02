@@ -22,7 +22,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Tests
 
             var sagaRepository = new MongoDbQuerySagaRepository<SimpleSaga>(SagaRepository.Instance);
 
-            var foundId = await sagaRepository.ShouldContainSaga(correlationId, TimeSpan.FromSeconds(30));
+            var foundId = await sagaRepository.ShouldContainSaga(correlationId, TimeSpan.FromSeconds(5));
 
             Assert.That(foundId.HasValue, Is.True);
 
@@ -30,7 +30,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Tests
 
             await busControl.Publish(nextMessage);
 
-            foundId = await sagaRepository.ShouldContainSaga(x => x.CorrelationId == correlationId && x.Completed, TimeSpan.FromSeconds(300));
+            foundId = await sagaRepository.ShouldContainSaga(x => x.CorrelationId == correlationId && x.Completed, TimeSpan.FromSeconds(5));
 
             Assert.That(foundId.HasValue, Is.True);
         }

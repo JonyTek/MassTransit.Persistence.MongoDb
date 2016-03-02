@@ -7,7 +7,7 @@ using MongoDB.Driver;
 
 namespace MassTransit.Persistence.MongoDb.Saga
 {
-    public class MongoDbSagaRepository<TSaga> : ISagaRepository<TSaga> 
+    public class MongoDbSagaRepository<TSaga> : ISagaRepository<TSaga>
         where TSaga : class, IVersionedSaga
     {
         private readonly IMongoDbSagaConsumeContextFactory _mongoDbSagaConsumeContextFactory;
@@ -50,7 +50,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
 
             if (policy.PreInsertInstance(context, out instance))
             {
-                await _collection.InsertOneAsync(instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
+                await TryInsertInstance(context, instance).ConfigureAwait(false);
             }
 
             if (instance == null)
@@ -70,7 +70,19 @@ namespace MassTransit.Persistence.MongoDb.Saga
 
                 await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
 
-                await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == context.CorrelationId, instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
+                await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == context.CorrelationId && x.Version < instance.Version, instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        private async Task TryInsertInstance<T>(ConsumeContext<T> context, TSaga instance) where T : class
+        {
+            try
+            {
+                await _collection.InsertOneAsync(instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                //Log
             }
         }
 
@@ -105,7 +117,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
                             throw new SagaException(ex.Message, typeof(TSaga), typeof(T), instance.CorrelationId, ex);
                         }
 
-                        await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == instance.CorrelationId, instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
+                        await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == instance.CorrelationId && x.Version < instance.Version, instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
                     }
                 }
             }

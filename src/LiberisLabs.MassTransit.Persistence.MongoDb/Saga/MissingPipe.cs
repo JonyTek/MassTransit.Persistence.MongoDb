@@ -27,12 +27,14 @@ namespace MassTransit.Persistence.MongoDb.Saga
 
         public async Task Send(SagaConsumeContext<TSaga, TMessage> context)
         {
-            SagaConsumeContext<TSaga, TMessage> proxy = _mongoDbSagaConsumeContextFactory.Create(_collection, context, context.Saga);
+            SagaConsumeContext<TSaga, TMessage> proxy = _mongoDbSagaConsumeContextFactory.Create(_collection, context, context.Saga, false);
 
             await _next.Send(proxy).ConfigureAwait(false);
 
             if (!proxy.IsCompleted)
                 await _collection.InsertOneAsync(context.Saga).ConfigureAwait(false);
+
+            await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == context.Saga.CorrelationId && x.Version < context.Saga.Version, context.Saga).ConfigureAwait(false);
         }
     }
 }
