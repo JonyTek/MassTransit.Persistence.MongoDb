@@ -12,7 +12,7 @@ namespace MassTransit.Persistence.MongoDb.Mappings
                 new CamelCaseElementNameConvention(),
                 new IgnoreIfNullConvention(true),
                 new IgnoreExtraElementsConvention(true),
-                new VersionedSagaConvention()
+                new SagaConvention()
             };
 
             ConventionRegistry.Register("LiberisLabs.MassTransit.Persistence.MongoDb Conventions",
