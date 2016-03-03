@@ -24,6 +24,8 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests
         
         public Task Consume(ConsumeContext<InitiateSimpleSaga> context)
         {
+            Version++;
+
             Initiated = true;
             Name = context.Message.Name;
 
@@ -35,6 +37,8 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests
 
         public Task Consume(ConsumeContext<ObservableSagaMessage> message)
         {
+            Version++;
+
             Observed = true;
 
             return Task.FromResult(0);
@@ -47,6 +51,8 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests
 
         public Task Consume(ConsumeContext<CompleteSimpleSaga> message)
         {
+            Version++;
+
             Completed = true;
 
             return Task.FromResult(0);
