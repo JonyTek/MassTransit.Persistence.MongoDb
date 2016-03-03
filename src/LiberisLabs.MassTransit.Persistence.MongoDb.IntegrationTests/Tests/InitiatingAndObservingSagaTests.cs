@@ -14,6 +14,8 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Tests
         [Test]
         public async Task GivenACorrelatedMessage_WhenInitiatingAndObservedMessageForSagaArrives_ThenSagaShouldBeLoaded()
         {
+            var a = SagaRepository.Instance;
+
             _correlationId = Guid.NewGuid();
             var initiationMessage = new InitiateSimpleSaga(_correlationId) {Name = "Lee"};
 
@@ -29,7 +31,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Tests
 
             await busControl.Publish(observableMessage);
 
-            foundId = await sagaRepository.ShouldContainSaga(x => x.Observed && x.CorrelationId == _correlationId, TimeSpan.FromSeconds(300));
+            foundId = await sagaRepository.ShouldContainSaga(x => x.Observed && x.CorrelationId == _correlationId, TimeSpan.FromSeconds(30));
 
             Assert.That(foundId.HasValue, Is.True);
         }

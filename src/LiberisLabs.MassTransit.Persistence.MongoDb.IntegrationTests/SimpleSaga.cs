@@ -29,8 +29,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests
 
             return Task.FromResult(0);
         }
-
-        [BsonId]
+        
         public Guid CorrelationId { get; set; }
 
         public Task Consume(ConsumeContext<ObservableSagaMessage> message)
