@@ -14,8 +14,6 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Tests
         [Test]
         public async Task GivenACorrelatedMessage_WhenInitiatingAndObservedMessageForSagaArrives_ThenSagaShouldBeLoaded()
         {
-            var a = SagaRepository.Instance;
-
             _correlationId = Guid.NewGuid();
             var initiationMessage = new InitiateSimpleSaga(_correlationId) {Name = "Lee"};
 
