@@ -45,10 +45,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
                 await _collection.DeleteOneAsync(x => x.CorrelationId == Saga.CorrelationId, CancellationToken).ConfigureAwait(false);
 
                 if (_log.IsDebugEnabled)
-                {
-                    _log.DebugFormat("SAGA:{0}:{1} Removed {2}", TypeMetadataCache<TSaga>.ShortName, TypeMetadataCache<TMessage>.ShortName,
-                        Saga.CorrelationId);
-                }
+                    _log.DebugFormat("SAGA:{0}:{1} Removed {2}", TypeMetadataCache<TSaga>.ShortName, TypeMetadataCache<TMessage>.ShortName, Saga.CorrelationId);
             }
 
         }

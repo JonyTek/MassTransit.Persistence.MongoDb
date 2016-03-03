@@ -84,10 +84,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
             catch (Exception ex)
             {
                 if (_log.IsDebugEnabled)
-                {
-                    _log.DebugFormat("SAGA:{0}:{1} Dupe {2} - {3}", TypeMetadataCache<TSaga>.ShortName, instance.CorrelationId,
-                        TypeMetadataCache<T>.ShortName, ex.Message);
-                }
+                    _log.DebugFormat("SAGA:{0}:{1} Dupe {2} - {3}", TypeMetadataCache<TSaga>.ShortName, instance.CorrelationId, TypeMetadataCache<T>.ShortName, ex.Message);
             }
         }
 
@@ -130,9 +127,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
             try
             {
                 if (_log.IsDebugEnabled)
-                {
                     _log.DebugFormat("SAGA:{0}:{1} Used {2}", TypeMetadataCache<TSaga>.ShortName, instance.CorrelationId, TypeMetadataCache<T>.ShortName);
-                }
 
                 var sagaConsumeContext = _mongoDbSagaConsumeContextFactory.Create(_collection, context, instance);
 

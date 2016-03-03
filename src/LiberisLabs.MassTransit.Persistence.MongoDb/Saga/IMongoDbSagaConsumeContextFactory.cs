@@ -1,4 +1,3 @@
-using MassTransit.Saga;
 using MongoDB.Driver;
 
 namespace MassTransit.Persistence.MongoDb.Saga

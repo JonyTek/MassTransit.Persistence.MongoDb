@@ -31,11 +31,9 @@ namespace MassTransit.Persistence.MongoDb.Saga
         public async Task Send(SagaConsumeContext<TSaga, TMessage> context)
         {
             if (_log.IsDebugEnabled)
-            {
                 _log.DebugFormat("SAGA:{0}:{1} Added {2}", TypeMetadataCache<TSaga>.ShortName, TypeMetadataCache<TMessage>.ShortName);
-            }
 
-            SagaConsumeContext<TSaga, TMessage> proxy = _mongoDbSagaConsumeContextFactory.Create(_collection, context, context.Saga, false);
+            var proxy = _mongoDbSagaConsumeContextFactory.Create(_collection, context, context.Saga, false);
 
             await _next.Send(proxy).ConfigureAwait(false);
 
