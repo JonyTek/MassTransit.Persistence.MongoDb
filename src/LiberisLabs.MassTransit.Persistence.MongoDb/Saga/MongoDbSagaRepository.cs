@@ -66,11 +66,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
             }
             else
             {
-                var sagaConsumeContext = _mongoDbSagaConsumeContextFactory.Create(_collection, context, instance);
-
-                await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
-
-                await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == context.CorrelationId && x.Version < instance.Version, instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
+                await TryConsume(context, policy, next, instance).ConfigureAwait(false);
             }
         }
 
@@ -102,22 +98,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
                 {
                     foreach (var instance in sagaInstances)
                     {
-                        try
-                        {
-                            var sagaConsumeContext = _mongoDbSagaConsumeContextFactory.Create(_collection, context, instance);
-
-                            await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
-                        }
-                        catch (SagaException)
-                        {
-                            throw;
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new SagaException(ex.Message, typeof(TSaga), typeof(T), instance.CorrelationId, ex);
-                        }
-
-                        await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == instance.CorrelationId && x.Version < instance.Version, instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
+                        await TryConsume(context, policy, next, instance).ConfigureAwait(false);
                     }
                 }
             }
@@ -128,6 +109,38 @@ namespace MassTransit.Persistence.MongoDb.Saga
             catch (Exception ex)
             {
                 throw new SagaException(ex.Message, typeof(TSaga), typeof(T), Guid.Empty, ex);
+            }
+        }
+
+        private async Task TryConsume<T>(ConsumeContext<T> context, ISagaPolicy<TSaga, T> policy, IPipe<SagaConsumeContext<TSaga, T>> next, TSaga instance) where T : class
+        {
+            try
+            {
+                var sagaConsumeContext = _mongoDbSagaConsumeContextFactory.Create(_collection, context, instance);
+
+                await policy.Existing(sagaConsumeContext, next).ConfigureAwait(false);
+
+                await UpdateMongoDbSaga(context, instance).ConfigureAwait(false);
+            }
+            catch (SagaException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new SagaException(ex.Message, typeof(TSaga), typeof(T), instance.CorrelationId, ex);
+            }
+        }
+
+        private async Task UpdateMongoDbSaga(PipeContext context, TSaga instance)
+        {
+            instance.Version += 1;
+
+            var old = await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == instance.CorrelationId && x.Version < instance.Version, instance, cancellationToken: context.CancellationToken).ConfigureAwait(false);
+
+            if (old == null)
+            {
+                throw new MongoDbConcurrencyException("Unable to update saga. It may not have been found or may have been updated by another process.");
             }
         }
     }

@@ -34,7 +34,7 @@ namespace MassTransit.Persistence.MongoDb.Saga
             if (!proxy.IsCompleted)
                 await _collection.InsertOneAsync(context.Saga).ConfigureAwait(false);
 
-            await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == context.Saga.CorrelationId && x.Version < context.Saga.Version, context.Saga).ConfigureAwait(false);
+            //await _collection.FindOneAndReplaceAsync(x => x.CorrelationId == context.Saga.CorrelationId && x.Version < context.Saga.Version, context.Saga).ConfigureAwait(false);
         }
     }
 }

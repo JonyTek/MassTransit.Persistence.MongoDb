@@ -78,6 +78,7 @@
     <Compile Include="Data\SagaRepository.cs" />
     <Compile Include="ExtensionMethodsForSagas.cs" />
     <Compile Include="InitiateSimpleSaga.cs" />
+    <Compile Include="Tests\InitiatingAndObservingSagaTests.cs" />
     <Compile Include="Tests\LocatingAnExistingSagaTests.cs" />
     <Compile Include="ObservableSagaMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

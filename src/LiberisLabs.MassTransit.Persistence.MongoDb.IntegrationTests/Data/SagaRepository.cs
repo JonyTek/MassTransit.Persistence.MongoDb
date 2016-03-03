@@ -11,7 +11,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Data
 
         public static async Task DeleteSaga(Guid correlationId)
         {
-            await Instance.GetCollection<BsonDocument>("sagas").DeleteOneAsync(x => x["correlationId"] == correlationId);
+            await Instance.GetCollection<BsonDocument>("sagas").DeleteOneAsync(x => x["_id"] == correlationId);
         }
     }
 }

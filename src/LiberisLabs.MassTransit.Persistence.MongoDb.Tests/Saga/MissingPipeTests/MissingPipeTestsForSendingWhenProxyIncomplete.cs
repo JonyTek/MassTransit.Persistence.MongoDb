@@ -50,5 +50,11 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MissingPipeTest
 
             Assert.That(saga, Is.Not.Null);
         }
+
+        [OneTimeTearDown]
+        public async Task Kill()
+        {
+            await SagaRepository.DeleteSaga(_saga.CorrelationId);
+        }
     }
 }

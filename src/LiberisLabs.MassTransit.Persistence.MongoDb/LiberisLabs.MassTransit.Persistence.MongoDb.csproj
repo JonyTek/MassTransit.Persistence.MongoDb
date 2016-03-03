@@ -68,6 +68,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Saga\IMongoDbSagaConsumeContextFactory.cs" />
     <Compile Include="Saga\MissingPipe.cs" />
+    <Compile Include="MongoDbConcurrencyException.cs" />
     <Compile Include="Saga\MongoDbQuerySagaRepository.cs" />
     <Compile Include="Saga\MongoDbSagaConsumeContext.cs" />
     <Compile Include="Saga\MongoDbSagaConsumeContextFactory.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Data;
 using MassTransit.Persistence.MongoDb.Saga;
@@ -8,31 +9,29 @@ using NUnit.Framework;
 namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Tests
 {
     [TestFixture]
-    public class LocatingAnExistingSagaTests
+    public class InitiatingAndObservingSagaTests
     {
         private Guid _correlationId;
 
         [Test]
-        public async Task GivenACorrelatedMessage_TheCorrectSagaShouldBeFound()
+        public async Task GivenACorrelatedMessage_WhenInitiatingAndObservedMessageForSagaArrives_ThenSagaShouldBeLoaded()
         {
             _correlationId = Guid.NewGuid();
-            var message = new InitiateSimpleSaga(_correlationId);
+            var initiationMessage = new InitiateSimpleSaga(_correlationId) {Name = "Lee"};
 
             var busControl = await Bus.StartAsync();
 
-            await busControl.Publish(message);
+            await busControl.Publish(initiationMessage);
 
             var sagaRepository = new MongoDbQuerySagaRepository<SimpleSaga>(SagaRepository.Instance);
 
-            var foundId = await sagaRepository.ShouldContainSaga(_correlationId, TimeSpan.FromSeconds(5));
+            var foundId = await sagaRepository.ShouldContainSaga(x => x.Initiated && x.CorrelationId == _correlationId, TimeSpan.FromSeconds(30));
 
-            Assert.That(foundId.HasValue, Is.True);
+            var observableMessage = new ObservableSagaMessage {Name = "Lee"};
 
-            var nextMessage = new CompleteSimpleSaga(_correlationId);
+            await busControl.Publish(observableMessage);
 
-            await busControl.Publish(nextMessage);
-
-            foundId = await sagaRepository.ShouldContainSaga(x => x.CorrelationId == _correlationId && x.Completed, TimeSpan.FromSeconds(5));
+            foundId = await sagaRepository.ShouldContainSaga(x => x.Observed && x.CorrelationId == _correlationId, TimeSpan.FromSeconds(300));
 
             Assert.That(foundId.HasValue, Is.True);
         }
