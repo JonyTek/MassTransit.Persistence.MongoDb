@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Data;
 using MassTransit.Persistence.MongoDb.Saga;
-using MongoDB.Driver;
 using NUnit.Framework;
 
 namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Tests
