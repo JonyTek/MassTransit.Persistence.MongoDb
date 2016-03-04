@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>MassTransit.Persistence.MongoDb</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>MongoDb Saga repository implementation for MassTransit</description>
+    <releaseNotes>N/A</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>MassTransit MongoDb Saga LiberisLabs API</tags>
+    <projectUrl>https://github.com/LiberisLabs/MassTransit.Persistence.MongoDb</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/LiberisLabs/MassTransit.Persistence.MongoDb/master/liberis-labs.jpg</iconUrl>
+  </metadata>
+</package>
