@@ -57,6 +57,14 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MongoDbSagaRepo
             _sagaPolicy.Verify(x => x.Missing(_sagaQueryConsumeContext.Object, It.IsAny<MissingPipe<SimpleSaga, InitiateSimpleSaga>>()), Times.Never);
         }
 
+        [Test]
+        public async Task ThenVersionIncremeted()
+        {
+            var saga = await SagaRepository.GetSaga(_correlationId);
+
+            Assert.That(saga.Version, Is.EqualTo(1));
+        }
+
         [OneTimeTearDown]
         public async Task Kill()
         {
