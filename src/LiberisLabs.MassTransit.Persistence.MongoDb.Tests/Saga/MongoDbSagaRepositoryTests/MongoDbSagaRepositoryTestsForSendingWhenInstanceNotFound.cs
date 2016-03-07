@@ -6,7 +6,6 @@ using MassTransit;
 using MassTransit.Persistence.MongoDb.Saga;
 using MassTransit.Pipeline;
 using MassTransit.Saga;
-using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 

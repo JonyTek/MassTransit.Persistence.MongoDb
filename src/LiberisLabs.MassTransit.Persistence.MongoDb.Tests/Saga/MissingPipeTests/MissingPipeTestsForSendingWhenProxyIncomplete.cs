@@ -30,7 +30,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MissingPipeTest
             _saga = new SimpleSaga {CorrelationId = Guid.NewGuid()};
             _context = new Mock<SagaConsumeContext<SimpleSaga, InitiateSimpleSaga>>();
             _context.SetupGet(m => m.Saga).Returns(_saga);
-            _consumeContextFactory.Setup(m => m.Create(collection, _context.Object, _context.Object.Saga, true)).Returns(_proxy.Object);
+            _consumeContextFactory.Setup(m => m.Create(collection, _context.Object, _context.Object.Saga, false)).Returns(_proxy.Object);
 
             _pipe = new MissingPipe<SimpleSaga, InitiateSimpleSaga>(collection, _nextPipe.Object, _consumeContextFactory.Object);
 
@@ -49,6 +49,12 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Saga.MissingPipeTest
             var saga = await SagaRepository.GetSaga(_saga.CorrelationId);
 
             Assert.That(saga, Is.Not.Null);
+        }
+
+        [OneTimeTearDown]
+        public async Task Kill()
+        {
+            await SagaRepository.DeleteSaga(_saga.CorrelationId);
         }
     }
 }

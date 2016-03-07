@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MassTransit.Context;
-using MassTransit.Saga;
+using MassTransit.Logging;
 using MassTransit.Util;
 using MongoDB.Driver;
 
@@ -11,8 +11,9 @@ namespace MassTransit.Persistence.MongoDb.Saga
         ConsumeContextProxyScope<TMessage>,
         SagaConsumeContext<TSaga, TMessage>
         where TMessage : class
-        where TSaga : class, ISaga
+        where TSaga : class, IVersionedSaga
     {
+        private static readonly ILog _log = Logger.Get<MongoDbSagaRepository<TSaga>>();
         private readonly IMongoCollection<TSaga> _collection;
         private readonly bool _existing;
 
@@ -42,6 +43,9 @@ namespace MassTransit.Persistence.MongoDb.Saga
             if (_existing)
             {
                 await _collection.DeleteOneAsync(x => x.CorrelationId == Saga.CorrelationId, CancellationToken).ConfigureAwait(false);
+
+                if (_log.IsDebugEnabled)
+                    _log.DebugFormat("SAGA:{0}:{1} Removed {2}", TypeMetadataCache<TSaga>.ShortName, TypeMetadataCache<TMessage>.ShortName, Saga.CorrelationId);
             }
 
         }

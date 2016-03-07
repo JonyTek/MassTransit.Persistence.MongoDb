@@ -32,5 +32,11 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests.Tests
         {
             Assert.That(_foundId.Value, Is.EqualTo(_correlationId));
         }
+
+        [OneTimeTearDown]
+        public async Task Kill()
+        {
+            await SagaRepository.DeleteSaga(_correlationId);
+        }
     }
 }

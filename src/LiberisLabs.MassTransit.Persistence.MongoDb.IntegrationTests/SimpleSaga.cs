@@ -2,8 +2,8 @@
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MassTransit;
+using MassTransit.Persistence.MongoDb.Saga;
 using MassTransit.Saga;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests
 {
@@ -11,7 +11,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests
         InitiatedBy<InitiateSimpleSaga>,
         Orchestrates<CompleteSimpleSaga>,
         Observes<ObservableSagaMessage, SimpleSaga>,
-        ISaga
+        IVersionedSaga
     {
         public bool Completed { get; private set; }
 
@@ -28,8 +28,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests
 
             return Task.FromResult(0);
         }
-
-        [BsonId]
+        
         public Guid CorrelationId { get; set; }
 
         public Task Consume(ConsumeContext<ObservableSagaMessage> message)
@@ -50,5 +49,7 @@ namespace LiberisLabs.MassTransit.Persistence.MongoDb.IntegrationTests
 
             return Task.FromResult(0);
         }
+
+        public int Version { get; set; }
     }
 }

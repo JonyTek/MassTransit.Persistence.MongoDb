@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using LiberisLabs.MassTransit.Persistence.MongoDb.Tests.Data;
 using MassTransit;
 using MassTransit.Persistence.MongoDb.Saga;
-using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 
